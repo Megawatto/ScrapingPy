@@ -50,7 +50,11 @@ def get_content(datas, verb):
                             f.write('<news>')
                             f.write('<header>%s</header>\n' % header)
                         content_body = beat.find('div', {'class': ['b-article__body', 'js-mediator-article']})
-                        content = content_body.find_all('p')
+                        if content_body:
+                            content = content_body.find_all('p')
+                        else:
+                            f.write('<body></body></news>\n')
+                            continue
                         if verb:
                             print(header, data, link)
                         f.write('<body>')
@@ -61,7 +65,7 @@ def get_content(datas, verb):
                                 continue
                             f.write(c.get_text())
                         f.write('</body>\n')
-                        f.write('</news>')
+                        f.write('</news>\n')
                     except HTTPError as e:
                         print(e)
                         print('error %s' % link)
