@@ -15,7 +15,6 @@ parser = argparse.ArgumentParser()
 parser.add_argument('-v', '--verbal', action='store_true', help='verbal output')
 
 
-
 def get_link_list():
     list_files = os.listdir('data')
     result = {}
@@ -49,6 +48,9 @@ def get_content(datas, verb):
                             header = header.get_text()
                             f.write('<news>')
                             f.write('<header>%s</header>\n' % header)
+                        else:
+                            print('no content %s' % link)
+                            continue
                         content_body = beat.find('div', {'class': ['b-article__body', 'js-mediator-article']})
                         if content_body:
                             content = content_body.find_all('p')
