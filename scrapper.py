@@ -5,9 +5,11 @@ from datetime import datetime, timedelta
 import os
 import ssl
 import argparse
+import time
 
 BASE = 'https://ria.ru'
 days_inc = 1
+timeout = 0
 sections = ['politics', 'defense_safety', 'media', 'health',
             'education', 'trend/Russia_WCIOM_polls_21112016',
             'company', 'incidents', 'sport', 'religion',
@@ -19,6 +21,7 @@ parser.add_argument('-b', '--base', type=str, help='base url address')
 parser.add_argument('-d', '--days', default=5, type=int, help='the number of days to parse days')
 parser.add_argument('-s', '--sections', nargs='+', type=str, help='section site')
 parser.add_argument('-v', '--verbal', action='store_true', help='verbal output')
+parser.add_argument('-t', '--timeout', type=float, help='timeout from request')
 
 
 def get_links(verb):
@@ -43,6 +46,8 @@ def get_links(verb):
                 if verb:
                     print('>>>>>>>>>>>>>>> %s %s %s<<<<<<<<<<<<<<<' % (days, link, section))
                 try:
+                    if timeout:
+                        time.sleep(timeout)
                     html = urlopen(link, context=cert)
                     beus = bs(html, "html.parser")
                     result = beus.find_all('div', {'class': 'b-list__item'})
@@ -75,5 +80,7 @@ if __name__ == '__main__':
         BASE = args.base
     if args.sections:
         sections = args.sections
+    if args.timeout:
+        timeout = args.timeout
 
     get_links(args.verbal)

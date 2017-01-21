@@ -1,4 +1,5 @@
 import argparse
+import csv
 import os
 import re
 import ssl
@@ -10,6 +11,7 @@ from bs4 import BeautifulSoup as bs
 patt = '/politics/20161206/1482985348.html'
 BASE = 'https://ria.ru'
 r = re.compile('^__\d{4}-\d\d-\d\d__')
+fieldnames = ['date', 'section', 'header', 'content']
 
 parser = argparse.ArgumentParser()
 parser.add_argument('-v', '--verbal', action='store_true', help='verbal output')
@@ -36,9 +38,10 @@ def get_content(datas, verb):
     cert = ssl.SSLContext(ssl.PROTOCOL_TLSv1)
     for data in datas:
         print('start parse %s' % data)
-        with open('parse_data/' + data, 'w') as f:
+        with open('parse_data/' + data + '.csv', 'w') as f:
+            writer = csv.DictWriter(f, fieldnames=fieldnames, dialect='excel', delimiter=";")
+            writer.writeheader()
             for date in datas[data]:
-                f.write('\n' + date + '\n')
                 for link in datas[data][date]:
                     try:
                         html = urlopen(BASE + link, context=cert)
@@ -46,8 +49,6 @@ def get_content(datas, verb):
                         header = beat.find('h1', {'class': 'b-article__title'})
                         if header:
                             header = header.get_text()
-                            f.write('<news>')
-                            f.write('<header>%s</header>\n' % header)
                         else:
                             print('no content %s' % link)
                             continue
@@ -55,19 +56,18 @@ def get_content(datas, verb):
                         if content_body:
                             content = content_body.find_all('p')
                         else:
-                            f.write('<body></body></news>\n')
+                            writer.writerow({'date': date, 'section': data, 'header': header, 'content':''})
                             continue
                         if verb:
                             print(header, data, link)
-                        f.write('<body>')
+                        text = ''
                         for c in content:
                             if c.find('div', {'class': 'b-inject'}):
                                 continue
                             elif not c.get_text():
                                 continue
-                            f.write(c.get_text())
-                        f.write('</body>\n')
-                        f.write('</news>\n')
+                            text += c.get_text()
+                        writer.writerow({'date': date, 'section': data, 'header': header, 'content': text})
                     except HTTPError as e:
                         print(e)
                         print('error %s' % link)
