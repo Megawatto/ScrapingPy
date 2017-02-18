@@ -35,8 +35,8 @@ def get_content(links=None, suf=None):
         file_name = 'parse_data/kom_lenta_pub_%s.csv' % suf
     else:
         file_name = 'parse_data/kom_lenta_pub.csv'
-    with open(file_name, 'w') as f:
-        writer = csv.DictWriter(f, delimiter=';', fieldnames=fn)
+    with open(file_name, 'w', encoding='utf-8') as f:
+        writer = csv.DictWriter(f, delimiter=';', fieldnames=fn, lineterminator="\n")
         writer.writeheader()
         if links is None:
             links = get_links()

@@ -23,8 +23,8 @@ def replace_text(t):
 
 
 def get_content():
-    with open('parse_data/nov_pub.csv', 'w') as f:
-        writer = csv.DictWriter(f, delimiter=';', fieldnames=fn)
+    with open('parse_data/nov_pub.csv', 'w', encoding='utf-8') as f:
+        writer = csv.DictWriter(f, delimiter=';', fieldnames=fn, lineterminator="\n")
         writer.writeheader()
         for line in get_links():
             try:

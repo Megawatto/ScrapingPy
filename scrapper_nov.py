@@ -16,9 +16,9 @@ def get_links():
     global _inc
 
     with open('data/nov_links.csv', 'w') as f:
-        writer = csv.DictWriter(f, dialect='excel', delimiter=';', fieldnames=fieldnames)
+        writer = csv.DictWriter(f, dialect='excel', delimiter=';', fieldnames=fieldnames, lineterminator="\n")
         writer.writeheader()
-        while _inc != 0:
+        while _inc > 0:
             try:
                 res = requests.get('%s/%s.html' % (BASE, _inc))
                 if res.status_code == 404 or res.status_code == 500:
@@ -28,7 +28,7 @@ def get_links():
                 beus = bs(res.content, "html.parser")
                 result = beus.find_all('a', attrs={'class': 'b-issue-content-item-title-link'})
                 for line in result:
-                    link = line.attrs['href']
+                    link = line.attrs['href'].strip()
                     section = link[1:].split('/')[0]
                     writer.writerow({'num': _inc, 'section': section, 'url': link})
             except Exception as e:

@@ -17,7 +17,7 @@ def get_links():
     days = 0
     today = datetime.today()
     with open('data/kom_lenta_links.csv', 'w') as f:
-        writer = csv.DictWriter(f, fieldnames=fieldnames, delimiter=';')
+        writer = csv.DictWriter(f, fieldnames=fieldnames, delimiter=';', lineterminator="\n")
         writer.writeheader()
         while days < days_inc:
             suf = today - timedelta(days=days)
